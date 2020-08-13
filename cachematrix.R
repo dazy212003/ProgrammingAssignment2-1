@@ -1,33 +1,63 @@
-## Put comments here that give an overall description of what your
-## functions do
+## A pair of functions that cache the inverse of a matrix
+## Creates a special matrix object that can cache its inverse
+makeCacheMatrix <- function( m = matrix() ) {
 
-## The first function, makeVector creates creates a special "vector", 
+	## Initialize the inverse property
+    i <- NULL
 
-makeCacheMatrix <- function(x = matrix()) {
-                m <- NULL
-                set <- function(y) {
-                        x <<- y
-                        m <<- NULL
-                }
-                get <- function() x
-                setmean <- function(mean) m <<- mean
-                getmean <- function() m
-                list(set = set, get = get,
-                     setmean = setmean,
-                     getmean = getmean)
+    ## Method to set the matrix
+    set <- function( matrix ) {
+            m <<- matrix
+            i <<- NULL
+    }
+
+    ## Method the get the matrix
+    get <- function() {
+    	## Return the matrix
+    	m
+    }
+
+    ## Method to set the inverse of the matrix
+    setInverse <- function(inverse) {
+        i <<- inverse
+    }
+
+    ## Method to get the inverse of the matrix
+    getInverse <- function() {
+        ## Return the inverse property
+        i
+    }
+
+    ## Return a list of the methods
+    list(set = set, get = get,
+         setInverse = setInverse,
+         getInverse = getInverse)
 }
 
-## The following function calculates the mean of the special "vector" created with the above function.
+
+## Compute the inverse of the special matrix returned by "makeCacheMatrix"
+## above. If the inverse has already been calculated (and the matrix has not
+## changed), then the "cachesolve" should retrieve the inverse from the cache.
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
-        m <- x$getmean()
-        if(!is.null(m)) {
-               message("getting cached data")
-               return(m)
-        }
-        data <- x$get()
-        m <- mean(data, ...)
-        x$setmean(m)
-        m
-}
 
+    ## Return a matrix that is the inverse of 'x'
+    m <- x$getInverse()
+
+    ## Just return the inverse if its already set
+    if( !is.null(m) ) {
+            message("getting cached data")
+            return(m)
+    }
+
+    ## Get the matrix from our object
+    data <- x$get()
+
+    ## Calculate the inverse using matrix multiplication
+    m <- solve(data) %*% data
+
+    ## Set the inverse to the object
+    x$setInverse(m)
+
+    ## Return the matrix
+    m
+}
